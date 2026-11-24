@@ -1,0 +1,22 @@
+[Unit]
+Description=Smart Plant - wake, capture, ONNX, shutdown
+After=local-fs.target
+StartLimitIntervalSec=300
+StartLimitBurst=2
+ConditionPathExists=@PROJECT_DIR@/.venv-camera/bin/python
+# A marker on the accessible FAT boot partition permits evidence retrieval.
+ConditionPathExists=!/boot/firmware/smartplant-maintenance
+
+[Service]
+Type=simple
+User=@RUN_USER@
+WorkingDirectory=@PROJECT_DIR@
+Environment=PYTHONUNBUFFERED=1
+ExecStart=@PROJECT_DIR@/.venv-camera/bin/python -m smartplant_pi.experiment_runner --mode optimized --serial-device /dev/serial0 --events-log @PROJECT_DIR@/events_log.txt --measurements-csv @PROJECT_DIR@/test_events.csv --image-dir @PROJECT_DIR@/images --onnx-python @PROJECT_DIR@/.venv-onnx/bin/python --leaf-worker @PROJECT_DIR@/leaf_classifier/worker.py --shutdown-after-initial-cycle
+Restart=on-failure
+RestartSec=10
+RuntimeMaxSec=180
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

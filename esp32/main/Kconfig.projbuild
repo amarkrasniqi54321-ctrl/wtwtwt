@@ -1,0 +1,111 @@
+menu "PECD Smart Plant"
+
+choice SMART_PLANT_OPERATING_MODE
+    prompt "Operating mode"
+    default SMART_PLANT_MODE_BASELINE
+    help
+        BASELINE is the deliberately unoptimized experimental reference.
+        OPTIMIZED uses timer deep sleep between fixed sensor samples and wakes
+        the Raspberry Pi after a retained cycle count. Both modes use the same
+        sensors, rules, calibration and serial protocol.
+
+config SMART_PLANT_MODE_BASELINE
+    bool "BASELINE - fixed twenty-second sampling"
+    help
+        Read both sensors every twenty seconds and transmit every sample. No
+        adaptive sampling, automatic light sleep, or deep sleep is enabled by
+        the application.
+
+config SMART_PLANT_MODE_OPTIMIZED
+    bool "OPTIMIZED - 20-second deep-sleep sensing and Pi wake"
+    help
+        Read both physical sensors once, retain the cycle state in RTC memory,
+        and use timer deep sleep between samples. GPIO26 wakes the Raspberry
+        Pi after a configured number of samples or a new environmental alarm.
+
+endchoice
+
+config SMART_PLANT_BUZZER_GPIO
+    int "Passive buzzer signal GPIO"
+    range 0 39
+    default 25
+
+config SMART_PLANT_DHT11_GPIO
+    int "DHT11 data GPIO"
+    range 0 33
+    default 4
+    help
+        DHT11 needs a GPIO that supports both input and output. This project
+        uses GPIO4.
+
+config SMART_PLANT_SOIL_DRY_RAW
+    int "Measured raw ADC value for the dry reference"
+    range 0 4095
+    default 0
+    help
+        Enter the averaged GPIO34 raw value measured with the probe in the
+        chosen dry reference. Zero is a placeholder until calibration.
+
+config SMART_PLANT_SOIL_WET_RAW
+    int "Measured raw ADC value for the wet reference"
+    range 0 4095
+    default 0
+    help
+        Enter the averaged GPIO34 raw value measured with the probe in the
+        chosen wet reference. Zero is a placeholder until calibration.
+
+config SMART_PLANT_SOIL_CALIBRATED
+    bool "Dry and wet soil ADC values were physically measured"
+    default n
+    help
+        Enable only after both endpoints above have been measured on this
+        exact sensor. Until then, normalized soil values and soil alerts are
+        disabled; raw ADC diagnostics remain available.
+
+config SMART_PLANT_OPTIMIZED_MIN_INTERVAL_S
+    int "OPTIMIZED deep-sleep sampling interval (seconds)"
+    range 10 3600
+    default 20
+    depends on SMART_PLANT_MODE_OPTIMIZED
+    help
+        The ESP32 remains awake only long enough to read the DHT11 and ADC,
+        write its UART record, then sleeps for this timer interval. Twenty
+        seconds is the reference scenario cadence.
+
+config SMART_PLANT_OPTIMIZED_PI_NORMAL_CYCLES
+    int "Normal camera interval and stable qualification (sensor cycles)"
+    range 1 360
+    default 90
+    depends on SMART_PLANT_MODE_OPTIMIZED
+    help
+        Normally request camera analysis every 90 cycles (about 30 minutes).
+        After this many consecutive valid alarm-free samples, use the stable interval.
+
+config SMART_PLANT_OPTIMIZED_PI_WAKE_CYCLES
+    int "Stable camera interval (sensor cycles)"
+    range 1 360
+    default 360
+    depends on SMART_PLANT_MODE_OPTIMIZED
+    help
+        GPIO26 is pulsed at this stable interval, or sooner on alarm/fault.
+        With the default twenty-second interval and 360 cycles, the Raspberry Pi
+        is requested after 360 real sensor measurements (approximately two
+        hours plus awake overhead; the cycle count is authoritative).
+
+config SMART_PLANT_ALERT_COOLDOWN_S
+    int "Repeated alert cooldown (seconds)"
+    range 10 86400
+    default 300
+    help
+        An active rule alerts on its inactive-to-active transition and then no
+        more often than this cooldown while the condition remains active.
+
+config SMART_PLANT_PI_WAKE_COOLDOWN_S
+    int "Minimum time between Raspberry Pi wake pulses (seconds)"
+    range 1 3600
+    default 1
+    depends on SMART_PLANT_MODE_OPTIMIZED
+    help
+        GPIO26 wakes a halted Raspberry Pi on policy requests. Limit pulses defensively in case of an unexpected reset.
+
+endmenu

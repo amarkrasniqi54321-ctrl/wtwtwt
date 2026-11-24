@@ -1,0 +1,3 @@
+# Camera/experiment process only. Picamera2, NumPy and Pillow remain managed
+# by Raspberry Pi OS and are exposed through --system-site-packages.
+pyserial>=3.5,<4
