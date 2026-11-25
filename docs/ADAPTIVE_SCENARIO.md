@@ -1,5 +1,7 @@
 # Adaptive camera scenario
 
+> The full final scenario simulation, independently re-extracted measurement coefficients and comparison are in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md). The legacy calculation below is retained as a reference cross-check.
+
 ## Operational contract
 - BASELINE: ESP32 awake, 20 s sensor cadence, UART logging and local alarm; Pi continuously powered, camera and ONNX at startup then every 1800 s.
 - OPTIMIZED: 20 s timer deep sleep plus awake overhead; 90 cycles (~30 min) normal, 360 (~120 min) stable. First scheduled wake at 90 cycles. After 90 consecutive valid alarm-free samples and at least one wake request, extend to 360. A newly active threshold (including another rule while one is active) or new actual sensor fault requests GPIO wake on that sample. Persistent alarms return to 90 cycles, rather than rebooting each sample. Invalid or uncalibrated readings cannot qualify as stable; missing calibration alone is not an urgent hardware fault. Existing buzzer rules and cooldown unchanged.

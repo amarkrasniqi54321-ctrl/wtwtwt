@@ -1,5 +1,7 @@
 # Smart Plant Monitoring
 
+**Current evaluation:** [Mathematical calculations, original measurement inventory, design, implementation and adaptive comparison](docs/MATHEMATICAL_CALCULATIONS.md). [Reproduction script and all numerical outputs](evaluation/).
+
 **Start here: [Complete project handoff](docs/HANDOFF.md).**
 
 Final active BASELINE and OPTIMIZED ESP32/Pi implementation, scripts, tests and technical documentation. Both firmware modes share one source tree with separate build profiles.
