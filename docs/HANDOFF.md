@@ -1,5 +1,7 @@
 # Smart Plant — complete technical handoff
 
+**Current report evidence:** [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md) is the primary evaluation; §5 below retains the earlier historical-coefficient example.
+
 Start here. This public repository contains the complete active implementation. Both firmware modes share one ESP32 source tree and use distinct build configurations. Read only unless explicitly instructed to change something. Do not redesign the project or invent evidence.
 
 ## 1. Get all required files
