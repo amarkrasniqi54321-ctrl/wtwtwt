@@ -1,6 +1,6 @@
 # Mathematical calculations — Smart Plant energy evaluation
 
-**Status:** reproducible analysis of historical measurements + conditional projection of the final implementation. No new electrical or physical end-to-end measurements are claimed. Runtime reference: [775fa23f](https://github.com/luka1222424/wtwtwt/tree/775fa23fa16627b27625882b89710bae86d8b2cf). Analysis rerun 25 November 2026 from the two original archives; all 13 result CSVs matched the previous analysis byte for byte. This page is the detailed evidence base for the six-page LNCS report, not the report itself.
+**Status:** reproducible analysis of historical measurements + conditional projection of the final implementation. No new electrical or physical end-to-end measurements are claimed. Runtime reference: [775fa23f](https://github.com/luka1222424/wtwtwt/tree/775fa23fa16627b27625882b89710bae86d8b2cf). Analysis rerun 25 November 2026 from the original archives. Independent audit confirmed the main results and recommended historical-cadence overlap correction; the corrected model and outputs below supersede the original projection. See [independent audit](INDEPENDENT_TECHNICAL_AUDIT.md). This page is the detailed evidence base for the six-page LNCS report, not the report itself.
 
 ## 1. Original measurements and reference data
 
@@ -298,37 +298,36 @@ Two controls separate effects: (i) alarm-free stable adaptive operation, and (ii
 
 For stable, $\lfloor (25487-90)/360\rfloor+1=71$ requests. For fixed schedule, $\lfloor25487/90\rfloor=283$. Dynamic count is simulated; use the individual [dynamic request timestamps](../evaluation/data/wake_requests_dynamic.csv), [stable](../evaluation/data/wake_requests_stable.csv) and [normal](../evaluation/data/wake_requests_normal.csv). Each optimized scenario includes one additional initial manual Pi boot at t=0 and assumes that this has the same incremental energy/duration as a measured Pi block. That boot is not a GPIO request. No extra energy for individual buzzer alarms or startup-specific transients is quantified. Equivalent Pi blocks are assumed not to overlap or cross the simulation endpoint appreciably.
 
-### 5.2 OPTIMIZED energy projection
+### 5.2 OPTIMIZED energy projection (audit-corrected)
 
-The combined Pi block includes overlapping sensing at historical cadence. Prevent double-counting by estimating the number of final sensing cycles falling in the modeled Pi activity duration:
-
-$$
-N_{\mathrm{ov}}=\min\left(N_{O,s},N_p\frac{d_p}{\tau_O}\right).
-$$
-
-This is a fractional expected-count approximation, not an exact count of events. Because historical Pi blocks include sensing at a faster cadence than final sensing, even this correction cannot completely isolate Pi-only energy. Use the combined block coefficient consistently and disclose this limitation.
+The measured combined Pi block embeds sensing at the historical cadence, not at the final cadence. The independent audit recommends removing that historical expected contribution from the block coefficient, then adding all final sensing events. Let $\tau_{\mathrm{hist}}=10+\delta=10.34$ s for the primary coefficient set.
 
 $$
-E_O=H P_O+\frac{(N_{O,s}-N_{\mathrm{ov}})e_{O,s}+N_pe_{O,p}}{3600}.
+e_{O,p}^{\mathrm{net}}=e_{O,p}-\frac{d_p}{\tau_{\mathrm{hist}}}e_{O,s}.
+$$
+
+The net Pi increment is still an inferred aggregate-system quantity; the fractional historical overlap is an expected-count approximation, not exact electrical isolation. Assumes the standalone sensing increment transfers to the historical Pi block and final schedule.
+
+$$
+E_O=H P_O+\frac{N_{O,s}e_{O,s}+N_pe_{O,p}^{\mathrm{net}}}{3600}.
 $$
 
 Dynamic substitution:
 
 $$
-N_p=109,\quad N_{\mathrm{ov}}=109\frac{34.644}{20.34}\approx185.65.
+e_{O,p}^{\mathrm{net}}=56.046417921053-\frac{34.644}{10.34}(0.092473402478)=55.736587306\ \mathrm{J}.
 $$
 
 $$
-E_{O,\mathrm{dyn}}
-=144(1.334775802)+\frac{(25487-N_{\mathrm{ov}})0.092473402478+109(56.046417921053)}{3600}.
+E_{O,\mathrm{dyn}}=144(1.334775802)+\frac{25487(0.092473402478)+109(55.736587306)}{3600}.
 $$
 
 $$
-E_{O,\mathrm{dyn}}=192.207715488+0.649917106+1.696960987
-=\boxed{194.554593581\ \mathrm{Wh}}.
+E_{O,\mathrm{dyn}}=192.207715488+0.654686002+1.687580005
+=\boxed{194.549981495\ \mathrm{Wh}}.
 $$
 
-Mean projected power $194.554593581/144=1.351074$ W; daily energy $194.554593581/6=32.425766$ Wh.
+The original projection (194.554593581 Wh) used final-period rather than historical-period overlap; correction is -0.004612086 Wh. Independent audit coefficients give 194.548053 Wh after correction (not substituted for the primary coefficients). Mean projected power 1.3510415 W; daily energy 32.424997 Wh. Report totals to two decimals (194.55 Wh); do not double-round to 194.6 Wh from 194.55 Wh.
 
 ### 5.3 Comparison
 
@@ -336,47 +335,45 @@ $$
 \Delta E=E_B-E_O,\qquad S=100\left(1-\frac{E_O}{E_B}\right)\%.
 $$
 
-| Model | Samples | Images or equivalent blocks | Background (Wh) | Sensing (Wh) | Camera/Pi (Wh) | Total Wh/144h | Saving Wh | Saving % |
+| Model | Samples | Images or equivalent blocks | Background (Wh) | Sensing (Wh) | Camera/net Pi increment (Wh) | Total Wh/144h | Saving Wh | Saving % |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | BASELINE | 25920 | 288 images | 264.285800 | 0.364120 | 0.216129 | 264.866048 | — | — |
-| OPTIMIZED stable | 25487 | 72 blocks | 192.207715 | 0.651536 | 1.120928 | 193.980180 | 70.885869 | 26.7629 |
-| OPTIMIZED fixed 90 | 25487 | 284 blocks | 192.207715 | 0.642261 | 4.421440 | 197.271416 | 67.594633 | 25.5203 |
-| OPTIMIZED dynamic | 25487 | 109 blocks | 192.207715 | 0.649917 | 1.696961 | 194.554594 | 70.311455 | 26.5460 |
+| OPTIMIZED stable | 25487 | 72 blocks | 192.207715 | 0.654686 | 1.114732 | 193.977133 | 70.888915 | 26.7641 |
+| OPTIMIZED fixed 90 | 25487 | 284 blocks | 192.207715 | 0.654686 | 4.396997 | 197.259399 | 67.606649 | 25.5248 |
+| OPTIMIZED dynamic | 25487 | 109 blocks | 192.207715 | 0.654686 | 1.687580 | 194.549981 | 70.316067 | 26.5478 |
 
-All values in [projections.csv](../evaluation/data/projections.csv) retain full precision. **Central projected result: 26.55% reduction against the revised BASELINE**, conditional on the synthetic scenario, not a new measured reduction. The optimized background is ~98.8% of projected dynamic energy, so most of the saving comes from the sleep/HALT architecture, not camera scheduling alone. An equivalent optimized activity block adds much more incremental energy than a camera event on the already running baseline; fewer Pi blocks help offset the boot cost.
-
-Separate effect of adaptivity relative to fixed 90-cycle optimized control:
+All values in [projections.csv](../evaluation/data/projections.csv) retain numerical precision. **Central projected result: 26.55% reduction against the revised BASELINE**, conditional on the synthetic scenario. Approximately 98.8% of dynamic energy is background; most savings arise from sleep/HALT rather than scheduling alone.
 
 $$
-\frac{284-109}{284}\cdot100=61.62\%\ \text{fewer equivalent Pi blocks},
+\frac{284-109}{284}\cdot100=61.62\%\ \text{fewer equivalent Pi blocks}.
 $$
 
 $$
-197.271416-194.554594=2.716822\ \mathrm{Wh},\qquad
-100\frac{2.716822}{197.271416}=1.38\%\ \text{lower optimized energy}.
+197.259399-194.549981=2.709417\ \mathrm{Wh},\qquad
+100\frac{2.709417}{197.259399}\approx1.37\%.
 $$
 
-Thus it is incorrect to attribute the entire 26.55% to the adaptive algorithm. Compared to fixed 90-cycle control the dynamic scenario yields an additional ~2.72 Wh, while preserving immediate new-alarm requests.
+This is the additional saving relative to fixed 90-cycle optimized control, not the entire baseline-relative saving.
 
 ### 5.4 Sensitivity and historical cross-check
 
-Holding coefficients and sample count fixed, vary number of equivalent blocks $n$ from 0 to 600. For this range the overlap cap does not bind. Each extra block raises projected energy by
+Holding coefficients and sample count fixed, vary equivalent blocks $n$ from 0 to 600.
 
 $$
-\frac{dE_O}{dn}=\frac{e_{O,p}-d_p e_{O,s}/\tau_O}{3600}\approx0.015525\ \mathrm{Wh}.
+\frac{dE_O}{dn}=\frac{e_{O,p}-d_pe_{O,s}/\tau_{\mathrm{hist}}}{3600}\approx0.0154824\ \mathrm{Wh}.
 $$
 
-Use [activation_sensitivity.csv](../evaluation/data/activation_sensitivity.csv). This is a conditional count sensitivity, not an alarm-frequency distribution. Extra alarm or failed/retried block energies could differ.
+See [activation_sensitivity.csv](../evaluation/data/activation_sensitivity.csv). This is conditional count sensitivity, not an alarm-frequency distribution or a guarantee for overlapping requests. Extra alarm and failed/retried block energies may differ.
 
-Check alternate BASELINE camera half-window (2.5, 3, 4 s) and quiet-phase fraction (40, 60, 80%); use each OPTIMIZED source (intact and the two partial segments) for a method sensitivity envelope. No assumption that partial segments are independent runs.
+Alternate BASELINE camera half-windows (2.5, 3, 4 s) and quiet-phase fractions (40, 60, 80%); use each OPTIMIZED source (intact and the two partial segments) for a method sensitivity envelope. Partial segments are not independent runs.
 
 | Scenario | Main result | Method sensitivity envelope | Historical-reference model, identical scenario |
 |---|---:|---:|---:|
-| Stable | 26.76% | 25.93–27.06% | 26.13% |
-| Fixed 90 | 25.52% | 24.69–25.82% | 24.88% |
-| Dynamic | 26.55% | 25.71–26.84% | 25.91% |
+| stable | 26.76% | 25.93–27.06% | 26.13% |
+| Fixed 90 | 25.52% | 24.69–25.82% | 24.89% |
+| dynamic | 26.55% | 25.71–26.84% | 25.91% |
 
-Historical-reference model: BASELINE 263.473333 Wh; stable 194.631239 Wh; fixed 90 197.910737 Wh; dynamic 195.203604 Wh. It uses the previous rounded background and per-event coefficients, historical 0.334625 s overhead, and the same half-open counting convention (25,494 samples; old presentation used 25,493). These are not independent statistical replications. Differences demonstrate dependence on waveform attribution and selected references. See [baseline_method_sensitivity.csv](../evaluation/data/baseline_method_sensitivity.csv), [method_sensitivity.csv](../evaluation/data/method_sensitivity.csv), [model_coefficients.csv](../evaluation/data/model_coefficients.csv). The envelope is **not a confidence interval or a complete uncertainty budget**.
+Historical-reference model with corrected overlap: BASELINE 263.473333 Wh; stable 194.628172 Wh; fixed 90 197.898637 Wh; dynamic 195.198960 Wh. It uses previous rounded coefficients and historical 0.334625 s overhead, with the same half-open counting convention (25,494 samples). This is a reference cross-check, not an independent statistical replication. See [baseline_method_sensitivity.csv](../evaluation/data/baseline_method_sensitivity.csv), [method_sensitivity.csv](../evaluation/data/method_sensitivity.csv), [model_coefficients.csv](../evaluation/data/model_coefficients.csv). The envelope is **not a confidence interval** or a complete uncertainty budget.
 
 ### 5.5 Fairness, service quality and limitations
 

@@ -104,12 +104,16 @@ def simulate(n,period,kind):
         prev=mask
     return np.array(times),reasons
 
+def net_block_j(c):
+    # Remove estimated sensing already embedded at the historical 10 s sleep cadence.
+    return c['opt_block_J']-c['opt_block_s']/(10+c['overhead_s'])*c['opt_sensor_J']
+
 def project(c,kind):
     period=20+c['overhead_s']; ns=math.ceil(T/period); times,reasons=simulate(ns,period,kind)
-    # include one initial manually booted Pi block at t=0 for both modes; no overlaps of blocks in these scenarios
-    n=len(times)+1; overlap=min(ns,n*c['opt_block_s']/period)
+    # Include one initial manually booted Pi block at t=0 for each optimized scenario.
+    n=len(times)+1
     B=c['base_W']*144; S=25920*c['base_sensor_J']/3600; C=288*c['base_camera_J']/3600
-    ob=c['opt_W']*144; os=(ns-overlap)*c['opt_sensor_J']/3600; oc=n*c['opt_block_J']/3600
+    ob=c['opt_W']*144; os=ns*c['opt_sensor_J']/3600; oc=n*net_block_j(c)/3600
     return dict(scenario=kind,baseline_bg_Wh=B,baseline_sensor_Wh=S,baseline_camera_Wh=C,baseline_Wh=B+S+C,opt_bg_Wh=ob,opt_sensor_Wh=os,opt_block_Wh=oc,opt_Wh=ob+os+oc,savings_Wh=B+S+C-ob-os-oc,savings_pct=100*(1-(ob+os+oc)/(B+S+C)),baseline_samples=25920,opt_samples=ns,baseline_camera_events=288,opt_requests=len(times),opt_activity_blocks=n,scheduled_30m=reasons.count('scheduled_30m'),scheduled_120m=reasons.count('scheduled_120m'),alarm_new=reasons.count('alarm_new'),period_s=period),times,reasons
 
 def main():
@@ -147,7 +151,7 @@ def main():
     pd.DataFrame(rows).to_csv(out/'projections.csv',index=False)
     sens=[]
     for k in range(0,601):
-        ns=math.ceil(T/(20+c['overhead_s']));ov=min(ns,k*c['opt_block_s']/(20+c['overhead_s']));e=144*c['opt_W']+((ns-ov)*c['opt_sensor_J']+k*c['opt_block_J'])/3600; B=rows[0]['baseline_Wh'];sens.append(dict(blocks=k,optimized_Wh=e,savings_pct=100*(1-e/B)))
+        ns=math.ceil(T/(20+c['overhead_s']));e=144*c['opt_W']+(ns*c['opt_sensor_J']+k*net_block_j(c))/3600; B=rows[0]['baseline_Wh'];sens.append(dict(blocks=k,optimized_Wh=e,savings_pct=100*(1-e/B)))
     sd=pd.DataFrame(sens);sd.to_csv(out/'activation_sensitivity.csv',index=False)
     # Deterministic empirical/model sensitivity envelope, not statistical confidence interval.
     vdf=pd.DataFrame(variants); scenarios=[]
@@ -169,12 +173,12 @@ def main():
     for j,x in enumerate([x for x in se if 15<x['center_s']<165]):ax.axvline(x['center_s'],color='#00856a',alpha=.5,lw=.8,label='Sensor-like event' if j==0 else None)
     ax.axhline(c['opt_W'],color='black',ls='--',lw=.9,label='Low-activity reference');ax.set(xlabel='Time (s)',ylabel='System power (W)',title='Historical OPTIMIZED: sleep, sensing and Pi activity');ax.legend(loc='upper left',fontsize=7,ncol=2);ax.grid(alpha=.2);save(fig,'fig2_optimized_trace')
     rr=rows[:3]; labels=['Baseline','Optimized\nstable','Optimized\nnormal','Optimized\ndynamic'];vals=[[rr[0]['baseline_bg_Wh'],rr[0]['baseline_sensor_Wh'],rr[0]['baseline_camera_Wh']]]+[[r['opt_bg_Wh'],r['opt_sensor_Wh'],r['opt_block_Wh']] for r in rr];v=np.array(vals);fig,ax=plt.subplots(figsize=(6.8,3.4));bottom=np.zeros(4)
-    for j,(label,col) in enumerate([('Background','#7f9ab5'),('Sensing','#009e73'),('Camera/Pi activity','#e69f00')]):ax.bar(labels,v[:,j],bottom=bottom,label=label,color=col,width=.63);bottom+=v[:,j]
-    for i,y in enumerate(bottom):ax.text(i,y+3,f'{y:.1f}',ha='center',fontsize=9)
+    for j,(label,col) in enumerate([('Background','#7f9ab5'),('Sensing','#009e73'),('Camera/net Pi increment','#e69f00')]):ax.bar(labels,v[:,j],bottom=bottom,label=label,color=col,width=.63);bottom+=v[:,j]
+    for i,y in enumerate(bottom):ax.text(i,y+3,f'{y:.2f}',ha='center',fontsize=9)
     ax.set(ylabel='Projected energy (Wh / 144 h)',title='Six-day energy model (not a new measurement)',ylim=(0,max(bottom)*1.14));ax.legend(fontsize=8,loc='lower left');ax.grid(axis='y',alpha=.2);save(fig,'fig3_projected_energy')
     fig,ax=plt.subplots(figsize=(6.8,3));h=np.linspace(0,144,145);ax.plot(h,rr[0]['baseline_Wh']*h/144,label='Baseline',lw=2,color='#26476e');
     for r,style,col in zip(rr,['--',':','-.'],['#00856a','#d55e00','#9467bd']):
-        ts=timelines[r['scenario']];k=np.searchsorted(ts,h*3600,side='right')+(h>0);period=r['period_s'];ns=np.ceil(h*3600/period);ov=np.minimum(ns,k*c['opt_block_s']/period);e=h*c['opt_W']+((ns-ov)*c['opt_sensor_J']+k*c['opt_block_J'])/3600;ax.plot(h,e,ls=style,color=col,label='Optimized '+r['scenario'],lw=1.6)
+        ts=timelines[r['scenario']];k=np.searchsorted(ts,h*3600,side='right')+(h>0);period=r['period_s'];ns=np.ceil(h*3600/period);e=h*c['opt_W']+(ns*c['opt_sensor_J']+k*net_block_j(c))/3600;ax.plot(h,e,ls=style,color=col,label='Optimized '+r['scenario'],lw=1.6)
     ax.set(xlabel='Time (h)',ylabel='Projected cumulative energy (Wh)',title='Modelled cumulative energy over six days');ax.legend(fontsize=8);ax.grid(alpha=.2);save(fig,'fig4_cumulative')
     fig,ax=plt.subplots(figsize=(6.6,3));ax.plot(sd.blocks,sd.savings_pct,lw=1.8,color='#26476e');
     for r,marker in zip(rr,['o','s','^']):ax.scatter(r['opt_activity_blocks'],r['savings_pct'],label=r['scenario'],marker=marker,s=36,zorder=3)

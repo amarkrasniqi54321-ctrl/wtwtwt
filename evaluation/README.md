@@ -11,7 +11,7 @@ Install the versions used in the rerun (Python 3, NumPy 2.3.5, pandas 2.2.3, Sci
     python -m pip install -r requirements.txt
     python analyze_energy.py "baseline(2).zip" "optimzed(4).zip" --out results
 
-The script validates ZIP CRCs, reads the CSVs directly, checks timestamps and data quality, extracts coefficients, simulates the policy and writes 13 CSVs plus five PNG/SVG figures. It was rerun on the exact original ZIPs on 25 November 2026; all 13 CSVs matched the earlier outputs byte-for-byte. Floating-point last digits and SVG metadata can differ with library versions. The figures are regenerated rather than stored as full-resolution image files here.
+The script validates ZIP CRCs, reads the CSVs directly, checks timestamps and data quality, extracts coefficients, simulates the policy and writes 13 CSVs plus five PNG/SVG figures. The original analysis was independently audited on 25 November 2026; the corrected script was rerun on the original ZIPs. The three projection-dependent tables use historical-cadence overlap correction; values reproduced from the same coefficients may differ in last floating-point digits. See [audit](../docs/INDEPENDENT_TECHNICAL_AUDIT.md). Floating-point last digits and SVG metadata can differ with library versions. The figures are regenerated rather than stored as full-resolution image files here.
 
 | Output in data/ | Meaning |
 |---|---|

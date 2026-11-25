@@ -1,5 +1,7 @@
 # Energy results and methodology
 
+> **Audit update (25 Nov 2026):** the authoritative final calculation is in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md), with historical-cadence overlap correction and a dynamic projection of 194.55 Wh (26.55% saving). [Independent audit](INDEPENDENT_TECHNICAL_AUDIT.md). Earlier examples below are historical/legacy, not the corrected final model.
+
 > **Historical coefficients and old scenario.** For the independently re-extracted coefficients, final adaptive projections and full derivation, use [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md). Do not treat the values below as the final adaptive evaluation.
 
 The Monsoon Power Monitor measured the combined Main power channel during short experimental runs. Component breakdowns below are inferred from waveform events, not measurements of electrically isolated parts.

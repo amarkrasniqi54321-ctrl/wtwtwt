@@ -1,5 +1,7 @@
 # Smart Plant Monitoring
 
+**Final audit-corrected projection:** 264.87 Wh BASELINE vs 194.55 Wh dynamic OPTIMIZED (26.55%); see [independent audit](docs/INDEPENDENT_TECHNICAL_AUDIT.md).
+
 **Current evaluation:** [Mathematical calculations, original measurement inventory, design, implementation and adaptive comparison](docs/MATHEMATICAL_CALCULATIONS.md). [Reproduction script and all numerical outputs](evaluation/).
 
 **Start here: [Complete project handoff](docs/HANDOFF.md).**
