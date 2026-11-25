@@ -1,5 +1,7 @@
 # Smart Plant — complete technical handoff
 
+> **Audit update (25 Nov 2026):** the authoritative final calculation is in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md), with historical-cadence overlap correction and a dynamic projection of 194.55 Wh (26.55% saving). [Independent audit](INDEPENDENT_TECHNICAL_AUDIT.md). Earlier examples below are historical/legacy, not the corrected final model.
+
 **Current report evidence:** [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md) is the primary evaluation; §5 below retains the earlier historical-coefficient example.
 
 Start here. This public repository contains the complete active implementation. Both firmware modes share one ESP32 source tree and use distinct build configurations. Read only unless explicitly instructed to change something. Do not redesign the project or invent evidence.

@@ -1,5 +1,7 @@
 # Adaptive camera scenario
 
+> **Audit update (25 Nov 2026):** the authoritative final calculation is in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md), with historical-cadence overlap correction and a dynamic projection of 194.55 Wh (26.55% saving). [Independent audit](INDEPENDENT_TECHNICAL_AUDIT.md). Earlier examples below are historical/legacy, not the corrected final model.
+
 > The full final scenario simulation, independently re-extracted measurement coefficients and comparison are in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md). The legacy calculation below is retained as a reference cross-check.
 
 ## Operational contract
