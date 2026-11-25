@@ -1,0 +1,10 @@
+git_head=296d6f263b17e3c549f89f1956170d3d928ae2dc
+git_branch=main
+git_status:
+ M smartplant_pi/camera_capture.py
+?? ../esp32_flash_baseline/
+?? ../esp32_flash_optimized/
+?? .venv-onnx
+host_model=Raspberry Pi 4 Model B Rev 1.5
+uname=Linux pecd-al 6.18.50+rpt-rpi-v8 #1 SMP PREEMPT Debian 1:6.18.50-1+rpt1 (2026-09-11) aarch64 GNU/Linux
+export_utc=2026-11-25T19:23:45Z

@@ -1,0 +1,57 @@
+=== rpi-eeprom-config ===
+[all]
+BOOT_UART=0
+WAKE_ON_GPIO=1
+POWER_OFF_ON_HALT=0
+
+
+=== vcgencmd bootloader_config ===
+[all]
+BOOT_UART=0
+WAKE_ON_GPIO=1
+POWER_OFF_ON_HALT=0
+
+
+
+=== /boot/firmware/config.txt (uart/gpio-shutdown) ===
+57:enable_uart=1
+
+=== /dev/serial0 ===
+lrwxrwxrwx 1 root root        5 Nov 25 19:29 /dev/serial0 -> ttyS0
+crw-rw---- 1 root dialout 4, 64 Nov 25 19:29 /dev/ttyS0
+
+=== systemctl cat smartplant-optimized.service ===
+# /etc/systemd/system/smartplant-optimized.service
+[Unit]
+Description=Smart Plant - wake, capture, ONNX, shutdown
+After=local-fs.target
+StartLimitIntervalSec=300
+StartLimitBurst=2
+ConditionPathExists=/home/pecd-al/wtwtwt/raspberry_pi/.venv-camera/bin/python
+# A marker on the accessible FAT boot partition permits evidence retrieval.
+ConditionPathExists=!/boot/firmware/smartplant-maintenance
+
+[Service]
+Type=simple
+User=pecd-al
+WorkingDirectory=/home/pecd-al/wtwtwt/raspberry_pi
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/pecd-al/wtwtwt/raspberry_pi/.venv-camera/bin/python -m smartplant_pi.experiment_runner --mode optimized --serial-device /dev/serial0 --events-log /home/pecd-al/wtwtwt/raspberry_pi/events_log.txt --measurements-csv /home/pecd-al/wtwtwt/raspberry_pi/test_events.csv --image-dir /home/pecd-al/wtwtwt/raspberry_pi/images --onnx-python /home/pecd-al/wtwtwt/raspberry_pi/.venv-onnx/bin/python --leaf-worker /home/pecd-al/wtwtwt/raspberry_pi/leaf_classifier/worker.py --shutdown-after-initial-cycle
+Restart=on-failure
+RestartSec=10
+RuntimeMaxSec=180
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target
+
+=== /etc/sudoers.d/smartplant-poweroff ===
+pecd-al ALL=(root) NOPASSWD: /usr/bin/systemctl poweroff
+
+=== wireplumber libcamera config ===
+wireplumber.profiles = {
+  main = {
+    monitor.libcamera = disabled
+    monitor.v4l2 = disabled
+  }
+}

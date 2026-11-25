@@ -1,0 +1,45 @@
+=== PER-BOOT SMARTPLANT & POWEROFF SUMMARY ===
+================================================================
+BOOT_ID=102c98cebc744f3e8564c729ef668142
+--- smartplant-optimized.service ---
+2026-11-25T19:29:20+01:00 pecd-al systemd[1]: Started smartplant-optimized.service - Smart Plant - wake, capture, ONNX, shutdown.
+2026-11-25T19:29:24+01:00 pecd-al python[835]: leaf-worker: model loaded once; waiting for image paths
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.365500676] [724]  INFO Camera camera_manager.cpp:340 libcamera v0.7.2+rpt20260817
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.600135231] [1123]  INFO RPI pipeline_base.cpp:1133 Using configuration file '/usr/share/libcamera/pipeline/rpi/vc4/rpi_apps.yaml'
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.839739065] [1123]  INFO IPAProxy ipa_proxy.cpp:184 Using tuning file /usr/share/libcamera/ipa/rpi/vc4/imx708.json
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.847084083] [1123]  INFO Camera camera_manager.cpp:223 Adding camera '/base/soc/i2c0mux/i2c@1/imx708@1a' for pipeline handler rpi/vc4
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.847190972] [1123]  INFO RPI vc4.cpp:445 Registered camera /base/soc/i2c0mux/i2c@1/imx708@1a to Unicam device /dev/media0 and ISP device /dev/media2
+2026-11-25T19:29:26+01:00 pecd-al python[724]: RUN_MARKER run_id=20261125T182921Z-5137bb mode=OPTIMIZED
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.861775250] [1213]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-XBGR8888/sRGB (1) 1536x864-SBGGR10_CSI2P/RAW
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.862237287] [1123]  INFO RPI vc4.cpp:620 Sensor: /base/soc/i2c0mux/i2c@1/imx708@1a - Selected sensor format: 1536x864-SBGGR10_1X10/RAW - Selected unicam format: 1536x864-pBAA/RAW
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.894058028] [1213]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-XBGR8888/sRGB (1) 2304x1296-SBGGR10_CSI2P/RAW
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.894549139] [1123]  INFO RPI vc4.cpp:620 Sensor: /base/soc/i2c0mux/i2c@1/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10/RAW - Selected unicam format: 2304x1296-pBAA/RAW
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.930483416] [1213]  INFO Camera camera.cpp:1216 configuring streams: (0) 640x480-XBGR8888/sRGB (1) 4608x2592-SBGGR10_CSI2P/RAW
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.930952509] [1123]  INFO RPI vc4.cpp:620 Sensor: /base/soc/i2c0mux/i2c@1/imx708@1a - Selected sensor format: 4608x2592-SBGGR10_1X10/RAW - Selected unicam format: 4608x2592-pBAA/RAW
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.974740435] [1213]  INFO Camera camera.cpp:1216 configuring streams: (0) 1280x720-BGR888/sRGB (1) 2304x1296-SBGGR10_CSI2P/RAW
+2026-11-25T19:29:26+01:00 pecd-al python[724]: [0:00:14.975222250] [1123]  INFO RPI vc4.cpp:620 Sensor: /base/soc/i2c0mux/i2c@1/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10/RAW - Selected unicam format: 2304x1296-pBAA/RAW
+2026-11-25T19:29:28+01:00 pecd-al systemd[1]: Stopping smartplant-optimized.service - Smart Plant - wake, capture, ONNX, shutdown...
+2026-11-25T19:29:29+01:00 pecd-al python[724]: RUN_COMPLETE run_id=20261125T182921Z-5137bb
+2026-11-25T19:29:29+01:00 pecd-al systemd[1]: smartplant-optimized.service: Deactivated successfully.
+2026-11-25T19:29:29+01:00 pecd-al systemd[1]: Stopped smartplant-optimized.service - Smart Plant - wake, capture, ONNX, shutdown.
+2026-11-25T19:29:29+01:00 pecd-al systemd[1]: smartplant-optimized.service: Consumed 2.303s CPU time.
+--- poweroff / halt markers ---
+2026-11-25T19:29:16+01:00 pecd-al systemd[1]: modprobe@configfs.service: Deactivated successfully.
+2026-11-25T19:29:16+01:00 pecd-al systemd[1]: modprobe@drm.service: Deactivated successfully.
+2026-11-25T19:29:16+01:00 pecd-al systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+2026-11-25T19:29:16+01:00 pecd-al systemd[1]: modprobe@fuse.service: Deactivated successfully.
+2026-11-25T19:29:17+01:00 pecd-al systemd[1]: rpi-resize-swap-file.service: Deactivated successfully.
+2026-11-25T19:29:17+01:00 pecd-al systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+2026-11-25T19:29:18+01:00 pecd-al systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+2026-11-25T19:29:19+01:00 pecd-al systemd[1]: rpi-resize-swap-file.service: Deactivated successfully.
+2026-11-25T19:29:20+01:00 pecd-al systemd[1]: Started smartplant-optimized.service - Smart Plant - wake, capture, ONNX, shutdown.
+2026-11-25T19:29:20+01:00 pecd-al systemd[1]: sshswitch.service: Deactivated successfully.
+2026-11-25T19:29:22+01:00 pecd-al systemd[1]: e2scrub_reap.service: Deactivated successfully.
+2026-11-25T19:29:24+01:00 pecd-al systemd[1]: systemd-rfkill.service: Deactivated successfully.
+2026-11-25T19:29:29+01:00 pecd-al systemd[1]: smartplant-optimized.service: Deactivated successfully.
+2026-11-25T19:29:29+01:00 pecd-al systemd[1]: session-3.scope: Deactivated successfully.
+2026-11-25T19:29:31+01:00 pecd-al systemd[1]: cloud-init-main.service: Deactivated successfully.
+2026-11-25T19:29:32+01:00 pecd-al systemd[1]: NetworkManager-dispatcher.service: Deactivated successfully.
+2026-11-25T20:22:50+01:00 pecd-al systemd[1]: systemd-hostnamed.service: Deactivated successfully.
+2026-11-25T20:23:46+01:00 pecd-al systemd[1]: session-5.scope: Deactivated successfully.
+2026-11-25T20:23:48+01:00 pecd-al systemd[1]: session-6.scope: Deactivated successfully.
