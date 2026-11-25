@@ -53,7 +53,7 @@ Original presentation projected six days from short measurements; it did not phy
 
 ## 2. Common mathematical methodology
 
-For samples at timestamps \(t_i\) with recorded powers \(p_i\) in mW, convert to W:
+For samples at timestamps $t_i$ with recorded powers $p_i$ in mW, convert to W:
 
 $$
 P_i=p_i/1000,\qquad
@@ -67,7 +67,7 @@ $$
 
 The actual timestamp integral is used for the table in §1.2. For example, BASELINE run 2: 460.328527956 J / 241.687 s = 1.904647449 W. This is the **whole-trace mean at the historical workload**, not the final BASELINE background coefficient. Do not multiply that mean by 144 h after changing the schedules.
 
-For activity identification, bin samples on the integer 5 kHz grid into 20 ms means \(q_k\), nominally 100 samples per bin. Incomplete boundary bins are dropped; interior bins must be nonempty. The energy increment for activity window \(A\) above the chosen reference \(P_r\) is:
+For activity identification, bin samples on the integer 5 kHz grid into 20 ms means $q_k$, nominally 100 samples per bin. Incomplete boundary bins are dropped; interior bins must be nonempty. The energy increment for activity window $A$ above the chosen reference $P_r$ is:
 
 $$
 e(A;P_r)=\Delta t\sum_{k\in A}(q_k-P_r),\qquad \Delta t=0.02\ \mathrm{s}.
@@ -81,7 +81,7 @@ $$
 H=6\cdot24=144\ \mathrm{h},\qquad T=3600H=518400\ \mathrm{s}.
 $$
 
-For periodic events starting at zero within the half-open interval \([0,T)\), \(N=\lceil T/\tau\rceil\). All projection energies are in Wh, background power in W, event energies in J. Full precision is retained in CSVs; displayed numbers are rounded.
+For periodic events starting at zero within the half-open interval $[0,T)$, $N=\lceil T/\tau\rceil$. All projection energies are in Wh, background power in W, event energies in J. Full precision is retained in CSVs; displayed numbers are rounded.
 
 ## 3. BASELINE — design, implementation and energy model
 
@@ -106,14 +106,14 @@ For each of the five recordings independently:
 
 1. Detect prominent camera-like peaks above 4 W in 20 ms means, with minimum separation 20 s. Exclude camera windows of ±3 s, first 20 s and final 2 s from ordinary-operation samples.
 2. Estimate sensing frequency by maximizing phase coherence of positive residuals (after 51-bin median filter, clipped to 0–0.6 W) over 0.497–0.506 Hz and refine locally. This identifies recurring ~2 s historical activity, not final 20 s sampling.
-3. Phase-fold ordinary power into 100 bins. Let \(\mu_j\) be the mean in phase bin \(j\), \(\mu_{(j)}\) the sorted means and \(\tau_r=1/f_r\).
+3. Phase-fold ordinary power into 100 bins. Let $\mu_j$ be the mean in phase bin $j$, $\mu_{(j)}$ the sorted means and $\tau_r=1/f_r$.
 
 $$
 P_{\mathrm{quiet,phase}}=\frac1{60}\sum_{j=1}^{60}\mu_{(j)},\qquad
 e_{s,r}=\tau_r\left(\frac1{100}\sum_{j=1}^{100}\mu_j-P_{\mathrm{quiet,phase}}\right).
 $$
 
-The fitted sensor-period increment includes recurring sensing/logging-related activity; non-periodic operating-system and board activity stays in the residual background. With ordinary-operation mean \(\overline P_{\mathrm{ord},r}\),
+The fitted sensor-period increment includes recurring sensing/logging-related activity; non-periodic operating-system and board activity stays in the residual background. With ordinary-operation mean $\overline P_{\mathrm{ord},r}$,
 
 $$
 P_{b,r}=\overline P_{\mathrm{ord},r}-e_{s,r}/\tau_r,\qquad
@@ -122,7 +122,7 @@ $$
 
 Camera windows use the ordinary-operation reference, which already includes average historical sensing. Thus camera energy is the increment above ordinary operation; we do not add the full camera-window energy to background. The new cadence assumes this incremental camera energy is transferable and that interactions with sensing are small; the assumption is not validated by new measurement.
 
-| Run | Fitted period (s) | Ordinary mean (W) | Background \(P_{b,r}\) (W) | Sensing \(e_{s,r}\) (J) | Camera increment \(e_{c,r}\) (J) | Complete events |
+| Run | Fitted period (s) | Ordinary mean (W) | Background $P_{b,r}$ (W) | Sensing $e_{s,r}$ (J) | Camera increment $e_{c,r}$ (J) | Complete events |
 |---|---:|---:|---:|---:|---:|---:|
 | 1 | 1.993890 | 1.887789 | 1.862895 | 0.049636 | 2.938767 | 10 |
 | 2 | 1.995595 | 1.872859 | 1.848226 | 0.049159 | 2.961863 | 3 |
@@ -130,7 +130,7 @@ Camera windows use the ordinary-operation reference, which already includes aver
 | 4 | 1.994444 | 1.844433 | 1.818350 | 0.052021 | 2.540843 | 3 |
 | 5 | 1.995671 | 1.847730 | 1.821882 | 0.051584 | 2.570022 | 3 |
 
-Use equal weight per run, rather than allowing the longer first run or its larger event count to dominate. For each coefficient \(x\), \(\bar x=\sum_{r=1}^5x_r/5\). Exact coefficients: [baseline_coefficients.csv](../evaluation/data/baseline_coefficients.csv).
+Use equal weight per run, rather than allowing the longer first run or its larger event count to dominate. For each coefficient $x$, $\bar x=\sum_{r=1}^5x_r/5$. Exact coefficients: [baseline_coefficients.csv](../evaluation/data/baseline_coefficients.csv).
 
 $$
 P_B=1.835318053296\ \mathrm{W},\qquad
@@ -166,7 +166,7 @@ E_{B,\mathrm{day}}=44.144341\ \mathrm{Wh},\quad
 \overline{P}_B=1.83934756\ \mathrm{W}.
 $$
 
-Historical coefficient cross-check (not primary): \(P_{B,h}=262.86/144\), \(e_{B,s,h}=3.79(3600)/259200\), \(e_{B,c,h}=7.03(3600)/8640\). Hence
+Historical coefficient cross-check (not primary): $P_{B,h}=262.86/144$, $e_{B,s,h}=3.79(3600)/259200$, $e_{B,c,h}=7.03(3600)/8640$. Hence
 
 $$
 E_{B,h}=262.86+3.79/10+7.03/30=263.473333\ \mathrm{Wh}.
@@ -202,7 +202,7 @@ $$
 P_O=\operatorname{median}\{q_k:q_k<1.4\ \mathrm{W}\}.
 $$
 
-Long Pi-like blocks: 20 ms bins above 1.6 W, bridge short interruptions with a 26-bin binary closing; require length >3 s and quiet flanks. Exclude truncated edge blocks and extend accepted intervals by 0.36 s per side. Short sensing-like pulses outside these blocks: threshold 1.42 W, four-bin closing, length 0.20–0.90 s, guard 0.08 s on each side and separation from Pi windows. Use signed excess above \(P_O\) for both:
+Long Pi-like blocks: 20 ms bins above 1.6 W, bridge short interruptions with a 26-bin binary closing; require length >3 s and quiet flanks. Exclude truncated edge blocks and extend accepted intervals by 0.36 s per side. Short sensing-like pulses outside these blocks: threshold 1.42 W, four-bin closing, length 0.20–0.90 s, guard 0.08 s on each side and separation from Pi windows. Use signed excess above $P_O$ for both:
 
 $$
 e_{O,s}=\frac1{35}\sum_{i=1}^{35}e(S_i;P_O),\qquad
@@ -216,7 +216,7 @@ $$
 | Run 1 suffix (sensitivity only) | 1.348910 | 0.093790 | 0.001820 | 10 | 55.978194 | 0.204573 | 34.564 | 5 |
 | Run 2 (primary) | 1.334776 | 0.092473 | 0.002729 | 35 | 56.046418 | 0.425529 | 34.644 | 5 |
 
-Sample SD \(s=\sqrt{\sum_i(x_i-\bar x)^2/(n-1)}\), describes within-record event variation, not uncertainty across independent hardware sessions. [optimized_coefficients.csv](../evaluation/data/optimized_coefficients.csv).
+Sample SD $s=\sqrt{\sum_i(x_i-\bar x)^2/(n-1)}$, describes within-record event variation, not uncertainty across independent hardware sessions. [optimized_coefficients.csv](../evaluation/data/optimized_coefficients.csv).
 
 Five primary Pi blocks:
 
@@ -255,7 +255,7 @@ The low-activity value is system power, **not Pi-only power**. Transferring thes
 
 ### 4.4 Mathematical model of the adaptive wake algorithm
 
-Define sample index \(i=0,\ldots,N_{O,s}-1\), \(t_i=i\tau_O\). Inputs: bitmask \(a_i\) of currently active alarm rules, valid flag \(v_i\), actual fault flag \(f_i\). RTC state: \(c\) cycles since the last successful GPIO request, \(s\) consecutive valid alarm-free samples (capped at 360), previous alarm and fault states, and \(h\) indicating at least one successful wake request. Initially \(c=s=0,\ a_{-1}=0,\ f_{-1}=0,\ h=0\). At every sample, before deciding:
+Define sample index $i=0,\ldots,N_{O,s}-1$, $t_i=i\tau_O$. Inputs: bitmask $a_i$ of currently active alarm rules, valid flag $v_i$, actual fault flag $f_i$. RTC state: $c$ cycles since the last successful GPIO request, $s$ consecutive valid alarm-free samples (capped at 360), previous alarm and fault states, and $h$ indicating at least one successful wake request. Initially $c=s=0,\ a_{-1}=0,\ f_{-1}=0,\ h=0$. At every sample, before deciding:
 
 $$
 c_i^-=c_{i-1}+1,\qquad
@@ -266,19 +266,19 @@ $$
 L_i=\begin{cases}360 & h_{i-1}=1\ \land\ s_i\ge90\\90&\text{otherwise}.\end{cases}
 $$
 
-With bitwise AND and NOT matching C, a new threshold is \(a_i\ \&\ \neg a_{i-1}\ne0\), and a new fault is \(f_i\land\neg f_{i-1}\). Request priority:
+With bitwise AND and NOT matching C, a new threshold is $a_i\ \&\ \neg a_{i-1}\ne0$, and a new fault is $f_i\land\neg f_{i-1}$. Request priority:
 
 $$
 r_i=\begin{cases}
 \mathrm{alarm\_new} & (a_i\ \&\ \neg a_{i-1})\ne0\\
 \mathrm{sensor\_fault} & f_i\land\neg f_{i-1}\\
-\mathrm{scheduled\_120m} & c_i^-\ge L_i=360\\
-\mathrm{scheduled\_30m} & c_i^-\ge L_i=90\\
+\mathrm{scheduled\_120m} & c_i^-\ge L_i,\ L_i=360\\
+\mathrm{scheduled\_30m} & c_i^-\ge L_i,\ L_i=90\\
 \mathrm{none} & \text{otherwise}.
 \end{cases}
 $$
 
-If no request: \(c_i=c_i^-\), \(h_i=h_{i-1}\). If request succeeds: \(c_i=0,\ h_i=1\); if GPIO request fails, firmware sets \(c_i=90,\ s_i=0\) to retry at a subsequent sample, without setting \(h\) on failure. Store current alarm/fault as previous state. The simulation in [analyze_energy.py](../evaluation/analyze_energy.py) uses fault-free inputs and assumes successful requests; thus it models the applicable subset of the exact C logic, not faults or failed wakes. Counts are obtained by executing this recurrence on every sample, not averaging 30 and 120 min intervals.
+If no request: $c_i=c_i^-$, $h_i=h_{i-1}$. If request succeeds: $c_i=0,\ h_i=1$; if GPIO request fails, firmware sets $c_i=90,\ s_i=0$ to retry at a subsequent sample, without setting $h$ on failure. Store current alarm/fault as previous state. The simulation in [analyze_energy.py](../evaluation/analyze_energy.py) uses fault-free inputs and assumes successful requests; thus it models the applicable subset of the exact C logic, not faults or failed wakes. Counts are obtained by executing this recurrence on every sample, not averaging 30 and 120 min intervals.
 
 At the modeled effective cadence, 90 cycles are 1830.6 s (30.51 min) and 360 cycles are 7322.4 s (122.04 min); first sample at t=0 means first scheduled request at cycle 90, t=89×20.34=1810.26 s. These are model timings, not measured final firmware latency.
 
@@ -296,7 +296,7 @@ Two controls separate effects: (i) alarm-free stable adaptive operation, and (ii
 | Fixed 90-cycle control | 283 | 0 | 0 | 283 | 1 | 284 |
 | Dynamic | 49 | 47 | 12 | 108 | 1 | 109 |
 
-For stable, \(\lfloor (25487-90)/360\rfloor+1=71\) requests. For fixed schedule, \(\lfloor25487/90\rfloor=283\). Dynamic count is simulated; use the individual [dynamic request timestamps](../evaluation/data/wake_requests_dynamic.csv), [stable](../evaluation/data/wake_requests_stable.csv) and [normal](../evaluation/data/wake_requests_normal.csv). Each optimized scenario includes one additional initial manual Pi boot at t=0 and assumes that this has the same incremental energy/duration as a measured Pi block. That boot is not a GPIO request. No extra energy for individual buzzer alarms or startup-specific transients is quantified. Equivalent Pi blocks are assumed not to overlap or cross the simulation endpoint appreciably.
+For stable, $\lfloor (25487-90)/360\rfloor+1=71$ requests. For fixed schedule, $\lfloor25487/90\rfloor=283$. Dynamic count is simulated; use the individual [dynamic request timestamps](../evaluation/data/wake_requests_dynamic.csv), [stable](../evaluation/data/wake_requests_stable.csv) and [normal](../evaluation/data/wake_requests_normal.csv). Each optimized scenario includes one additional initial manual Pi boot at t=0 and assumes that this has the same incremental energy/duration as a measured Pi block. That boot is not a GPIO request. No extra energy for individual buzzer alarms or startup-specific transients is quantified. Equivalent Pi blocks are assumed not to overlap or cross the simulation endpoint appreciably.
 
 ### 5.2 OPTIMIZED energy projection
 
@@ -328,7 +328,7 @@ E_{O,\mathrm{dyn}}=192.207715488+0.649917106+1.696960987
 =\boxed{194.554593581\ \mathrm{Wh}}.
 $$
 
-Mean projected power \(194.554593581/144=1.351074\) W; daily energy \(194.554593581/6=32.425766\) Wh.
+Mean projected power $194.554593581/144=1.351074$ W; daily energy $194.554593581/6=32.425766$ Wh.
 
 ### 5.3 Comparison
 
@@ -360,7 +360,7 @@ Thus it is incorrect to attribute the entire 26.55% to the adaptive algorithm. C
 
 ### 5.4 Sensitivity and historical cross-check
 
-Holding coefficients and sample count fixed, vary number of equivalent blocks \(n\) from 0 to 600. For this range the overlap cap does not bind. Each extra block raises projected energy by
+Holding coefficients and sample count fixed, vary number of equivalent blocks $n$ from 0 to 600. For this range the overlap cap does not bind. Each extra block raises projected energy by
 
 $$
 \frac{dE_O}{dn}=\frac{e_{O,p}-d_p e_{O,s}/\tau_O}{3600}\approx0.015525\ \mathrm{Wh}.
